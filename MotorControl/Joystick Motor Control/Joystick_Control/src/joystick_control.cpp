@@ -20,8 +20,17 @@ void setup() {
 }
 
 void loop() {
-  Serial.println(analogRead(VRX));
-  Serial.println(analogRead(VRY));
+  pos_x = analogRead(VRX);
+  pos_y = analogRead(VRY);
+
+  for (int i = 1; i <= 4; i++)
+  {
+    values_to_send[i - 1] = VRX >> ((i * 8);
+    values_to_send[i + 3] = VRY >> ((i * 8);
+  }
+
+  Serial.write(values_to_send, 8);
+  Serial.send_now();
 
   delay(100);
 }

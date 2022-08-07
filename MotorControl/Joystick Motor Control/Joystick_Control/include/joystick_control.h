@@ -12,3 +12,8 @@
 
 const uint8_t VRX = 15;
 const uint8_t VRY = 16;
+
+uint32_t pos_x;
+uint32_t pos_y;
+
+uint8_t values_to_send[8];
