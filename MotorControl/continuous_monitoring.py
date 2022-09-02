@@ -9,7 +9,7 @@ import matplotlib.animation as animation
 # generate work
 def sender(connection):
     print('Sender: Running', flush=True)
-    value = np.arange(64, dtype=int)
+    value = np.arange(32, dtype=int)
     values_to_send = np.arange(2, dtype=int)
 
     # Check if serial port is open
@@ -18,7 +18,7 @@ def sender(connection):
     while not portOpen:
         try:
             # Make sure COM port is correct (see in Gestionnaire de périphériques)
-            arduino = serial.Serial(port='COM7', baudrate=1000000, timeout=None, xonxoff=False, rtscts=False,
+            arduino = serial.Serial(port='COM4', baudrate=1000000, timeout=None, xonxoff=False, rtscts=False,
                                     dsrdtr=False)
             # Clear the serial buffer (input and output)
             arduino.flushInput()
