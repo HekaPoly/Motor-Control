@@ -1,0 +1,1 @@
+/* Ceci est un test pour le mode d'emploi Git */
