@@ -25,18 +25,6 @@
 #include "SPI_helper.h"
 #include "motor_commands.h"
 
-unsigned long CURRENT_MILLIS;
-uint32_t WAIT_TIME_MILLIS = 2000;
-
-//Fonctions SPI
-void writeRegister(byte reg, byte value1, byte value2);
-void writeRegisters();
-unsigned int readRegister(byte reg);
-void SPISetup();
-void readRegisters();
-void writeDefaultRegisters();
-void readSerial(double& angle);
-
 int speed = 100;
 bool brakes_enabled_status = true;
 uint8_t command_received = TURN_CW;
