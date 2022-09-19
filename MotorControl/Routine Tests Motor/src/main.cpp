@@ -1,142 +1,145 @@
-/*
-Cree le 02/09/2019
-
-Code pour tester si un moteur fonctionne.
-Moteur va changer de direction a chaque 3 secs.
-La lecture de l'encodeur ne fonctionne pas pendant l'exécution
-
-Pour utiliser : 
-- Brancher le moteur au board (ribbon cable + molex)
-- Open PSU
-- Reset Teensy
-
-*/
-#define ENCODER_OPTIMIZE_INTERRUPTS
+/**
+ * @file
+ * main.cpp
+ * 
+ * @author
+ * Équipe Contrôle des moteurs - Heka
+ * 
+ * @brief
+ * This file is meant to define the control loop of the routine tests executed on the motors
+ * 
+ * @note
+ * Pour utiliser : 
+	- Brancher le moteur au board (PSU (power supply) + deux câbles allant vers le moteur)
+	- Allumer PSU
+	- Reset Teensy
+ * 
+ * @copyright Copyright Heka (c) 2022
+ * 
+ */
 
 #include <Arduino.h>
-#include "SPI_helper.h"
 #include <Wire.h>
 #include <SPI.h>
-#include <Encoder.h>
 
+#include "SPI_helper.h"
+#include "motor_commands.h"
 
-#pragma region "Prototypes"
+unsigned long CURRENT_MILLIS;
+uint32_t WAIT_TIME_MILLIS = 2000;
 
-
-//Fonctions qui fonctionnent :
-inline double readAngle(bool fullTurn);
-void updateAngle(double newAngle, double& angle);
-void resetAngle();
-void checkIfFullTurn(double& angle);
-
+//Fonctions SPI
+void writeRegister(byte reg, byte value1, byte value2);
+void writeRegisters();
+unsigned int readRegister(byte reg);
+void SPISetup();
+void readRegisters();
+void writeDefaultRegisters();
 void readSerial(double& angle);
 
-inline void setDirection(bool);
-inline void toggleGoal();
+int speed = 100;
+bool brakes_enabled_status = true;
+uint8_t command_received = TURN_CW;
 
-#pragma endregion "Prototypes"
-
-#pragma region "Variables et constantes" //{
-
-
-
-//Moteur
-const int resetPin = 2;
-const int enablePin = 3;
-const int directionPin = 4;
-const int brakePin = 5;
-const int motorPin = 6;
-const int lockPin = 7;
-const int faultPin = 8;
-const int encoderPin1 = 0, encoderPin2 = 1;
-
-//Lecture de l'encoder
-const double gearReduction = 1; //100 with gearbox, 1 without
-const double encoderResolution = 4;
-const double countsPerTurn = 800;
-
-//Controle du moteur
-const int pulseMax = 2047;
-const int pulseMin = 100;
-const int turnCW = 1;
-const int turnCCW = 2;
-Encoder encoder(encoderPin2, encoderPin1);
-bool state = true;
-
-#pragma endregion //}
-
-void setup() {
+void setup() 
+{
 	Serial.begin(9600);
 	Serial.println("Starting");
   
 	SPISetup();
-	motorSetup();
+	motor_setup();
+
+	/* Enable device */
+	digitalWrite(ENABLE_PIN, HIGH);
+
+	/* Desactivate brakes */
+	digitalWrite(BRAKE_PIN, LOW);
+	brakes_enabled_status = false;
+
+	/* Set motor speed for test */
+	analogWrite(MOTOR_PIN, speed);
 }
 
-unsigned long prevTime = millis();
-unsigned long timeInterval = 3000;  // Change direction every 3 sec
-int turnTime = 350;
-int speed = 100;
-
-void motorSetup() {
-	//Motor Setup
-	pinMode(2, OUTPUT);
-	pinMode(3, OUTPUT);
-	pinMode(4, OUTPUT);
-	pinMode(5, OUTPUT); //Brake
-	pinMode(6, OUTPUT); //Motor
-	pinMode(7, INPUT);
-	pinMode(8, INPUT);
-
-	analogWriteResolution(11);
-	analogWriteFrequency(motorPin, 23437.5); //Values between 0-2047
-
-	digitalWrite(2, LOW); //RESET
-	digitalWrite(3, HIGH); //Enable
-	digitalWrite(4, HIGH); //DIR
-	digitalWrite(5, LOW); //Brake
+void disable_brakes(bool *current_brakes_status)
+{
+	if (*current_brakes_status == true)
+	{
+		digitalWrite(BRAKE_PIN, LOW);
+		*current_brakes_status = false;
+	}
 }
 
-inline void timeControl(){
-	unsigned long curTime = millis();
-
-	if (curTime - prevTime > timeInterval){
-		Serial.println("Changing direction");
-		state = !state;
-		digitalWrite(enablePin, LOW);
-		digitalWrite(brakePin, HIGH);
-		delay(10);
-
-		if(state){
-			setDirection(HIGH);
-		}
-		else{
-			setDirection(LOW);
-		}
-
-		prevTime = curTime;
+inline void control_loop(uint8_t command)
+{	
+	if (command == TURN_CW)
+	{
+		disable_brakes(&brakes_enabled_status);
+		digitalWrite(DIRECTION_PIN, HIGH);
+	}
+	else if (command == TURN_CCW)
+	{
+		disable_brakes(&brakes_enabled_status);
+		digitalWrite(DIRECTION_PIN, LOW);
+	}
+	else if(command == BRAKE)
+	{
+		digitalWrite(BRAKE_PIN, HIGH);
+		brakes_enabled_status = true;
+	}
+	else
+	{
+		/* Do nothing */
 	}
 
-	Serial.print("Angle : ");
-	Serial.println(readAngle(false));
-
-	digitalWrite(enablePin, HIGH);
-	digitalWrite(brakePin, LOW);
-	analogWrite(motorPin, speed);
-
-	delay(10);
+	delay(1);
 }
 
-void loop() {
-	timeControl();
+uint8_t check_serial_buffer()
+{
+	uint8_t res = IDLE_STATE;
+
+	if (Serial.available() > 0)
+	{
+		int32_t command = Serial.read();
+
+		if (command == 'A')
+		{
+			res = TURN_CW;
+		}
+		else if (command == 'B')
+		{
+			res = TURN_CCW;
+		}
+		else if (command == 'Z')
+		{
+			res = BRAKE;
+		}
+		else
+		{
+			/* Do nothing */
+		}
+	}
+
+	/* Clear serial read buffer */
+	while (Serial.available() > 0)
+	{
+		Serial.read();
+	}
+
+	return res;
 }
 
-#pragma region "Setup and SPI" //{
+void loop() 
+{
+	command_received = check_serial_buffer();
+	
+	control_loop(command_received);
+}
 
 
 
 void readFault() {
-	if (digitalRead(faultPin) == HIGH) {
+	if (digitalRead(FAULT_PIN) == HIGH) {
 		Serial.println("Il y a une faute :(");
 	}
 	else
@@ -162,28 +165,3 @@ void writeDefaultRegisters() {
 	writeRegister(0x0B, 0x00, 0x00);
 	writeRegister(0x2A, 0x00, 0x00);
 }
-
-#pragma endregion //}
-
-#pragma region "Encoder" //{
-
-double countToAngleFactor = 360 / (countsPerTurn*gearReduction*encoderResolution);
-
-inline double readAngle(bool fullTurn=false) {
-	double angle =  encoder.read()*countToAngleFactor ; //To get degrees
-
-	return angle;
-}
-
-#pragma endregion //}
-
-#pragma region "Motor" //{
-
-inline void setDirection(bool direction){
-	if (direction)
-		digitalWrite(directionPin, HIGH);
-	else
-		digitalWrite(directionPin, LOW);
-}
-
-#pragma endregion //}
