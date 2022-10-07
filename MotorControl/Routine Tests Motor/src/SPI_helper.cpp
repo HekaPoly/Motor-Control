@@ -5,10 +5,12 @@
 #include "SPI_helper.h"
 
 void writeRegisters() {
-	writeRegister(0x00, 0x01, 0x11);
+	writeRegister(0x00, 0x01, 0x21); //Internal Register PWM Mode is set here
 	writeRegister(0x01, 0x00, 0x00);
 	writeRegister(0x02, 0x04, 0xFF);
-	writeRegister(0x03, 0x68, 0x00);
+	//writeRegister(0x03, 0x68, 0x00);
+	//To test
+	writeRegister(0x03, 0x08, 0x00); //LOCK signal takes less rev% to activate
 	writeRegister(0x04, 0x00, 0xD7);
 	writeRegister(0x05, 0x00, 0x00);
 	writeRegister(0x06, 0x00, 0x00);
@@ -37,7 +39,6 @@ void SPISetup() {
 	pinMode(CS, OUTPUT);
 	SPI.begin();
 	writeRegisters();
-	//writeDefaultRegisters();
 }
 
 unsigned int readRegister(byte reg) {
