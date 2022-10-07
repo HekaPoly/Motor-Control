@@ -29,6 +29,9 @@ int speed = 100;
 bool brakes_enabled_status = true;
 uint8_t command_received = TURN_CW;
 
+/**
+ * @brief 
+ */
 void setup() 
 {
 	Serial.begin(9600);
@@ -48,6 +51,11 @@ void setup()
 	analogWrite(MOTOR_PIN, speed);
 }
 
+/**
+ * @brief 
+ * 
+ * @param current_brakes_status 
+ */
 void disable_brakes(bool *current_brakes_status)
 {
 	if (*current_brakes_status == true)
