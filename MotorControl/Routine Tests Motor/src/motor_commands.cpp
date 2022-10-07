@@ -19,6 +19,12 @@
 /* Define encoder only in the .cpp */
 Encoder encoder(PIN_2_ENCODER, PIN_1_ENCODER);
 
+/**
+ * @brief 
+ * 
+ * @param 
+ * 
+ */
 void motor_setup() {
 	pinMode(RESET_PIN, OUTPUT);
 	pinMode(ENABLE_PIN, OUTPUT);
