@@ -20,11 +20,12 @@
 Encoder encoder(PIN_2_ENCODER, PIN_1_ENCODER);
 
 /**
- * @brief 
+ * @brief motor_setup -> setup des différentes pin du Arduino qui vont chacune contrôler une partie différente du moteur.
  * 
- * @param 
+ * @param En passant le curseur sur les différentes PIN, on peut voir à quel numéro ils correspondent sur le Arduino.
  * 
  */
+
 void motor_setup() {
 	pinMode(RESET_PIN, OUTPUT);
 	pinMode(ENABLE_PIN, OUTPUT);
@@ -42,12 +43,24 @@ void motor_setup() {
 	digitalWrite(DIRECTION_PIN, HIGH);
 	digitalWrite(BRAKE_PIN, LOW);
 }
+/**
+ * @brief On fait cette étape deux fois (? -> pas certaine)
+ * 
+ * @param fullTurn 
+ * @return double -> précision (comme un float) va arrondir à 2 décimales après la virgule.
+ * 
+ */
 
 double read_angle(bool fullTurn) {
 	double angle = encoder.read() * COUNT_TO_ANGLE_FACTOR;
 
 	return angle;
 }
+/**
+ * @brief Set the direction object: Si la direction est (what) la DIRECTION_PIN sera activée ou pas. Cela va faire tourner le moteur dans un sens ou dans l'autre
+ * 
+ * @param direction : (je pense) = Clockwise ou Anticlockwise
+ */
 
 void set_direction(bool direction){
 	if (direction)
