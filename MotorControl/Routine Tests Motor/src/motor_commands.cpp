@@ -44,10 +44,10 @@ void motor_setup() {
 	digitalWrite(BRAKE_PIN, LOW);
 }
 /**
- * @brief On fait cette étape deux fois (? -> pas certaine)
+ * @brief "return_angle" = fonction
  * 
- * @param fullTurn 
- * @return double -> précision (comme un float) va arrondir à 2 décimales après la virgule.
+ * @param fullTurn : 
+ * @return double -> précision (comme un float) va arrondir à 1 décimale après la virgule.
  * 
  */
 
