@@ -30,7 +30,7 @@ bool brakes_enabled_status = true;
 uint8_t command_received = TURN_CW;
 
 /**
- * @brief 
+ * @brief setup for motor control
  */
 void setup() 
 {
@@ -52,9 +52,9 @@ void setup()
 }
 
 /**
- * @brief 
+ * @brief turns off brake pin if brakes are activated
  * 
- * @param current_brakes_status 
+ * @param current_brakes_status bool - state of brakes: on (True) or off (False)
  */
 void disable_brakes(bool *current_brakes_status)
 {
@@ -64,7 +64,12 @@ void disable_brakes(bool *current_brakes_status)
 		*current_brakes_status = false;
 	}
 }
-
+/**
+ * @brief activates direction pin if command is to turn clockwise, disactivates it 
+ * if command is to turn counter-clockwise and activates brake pin if command is to brake
+ * Decides what to do with motor depending on serial command
+ * @param command dictates what to do in relation to the direction and the brake
+ */
 inline void control_loop(uint8_t command)
 {	
 	if (command == TURN_CW)
@@ -89,7 +94,11 @@ inline void control_loop(uint8_t command)
 
 	delay(1);
 }
-
+/**
+ * @brief gives a command value to res according to a received command from serial buffer
+ * 
+ * @return uint8_t motor direction command 
+ */
 uint8_t check_serial_buffer()
 {
 	uint8_t res = IDLE_STATE;
@@ -124,7 +133,10 @@ uint8_t check_serial_buffer()
 
 	return res;
 }
-
+/**
+ * @brief main loop
+ * 
+ */
 void loop() 
 {
 	command_received = check_serial_buffer();
@@ -144,7 +156,10 @@ void readFault() {
 	Serial.print("Le registre de faute est : ");
 	Serial.println(readRegister(0x2A), BIN);
 }
-
+/**
+ * @brief set default values in driver registers
+ * 
+ */
 void writeDefaultRegisters() {
 	//Recommended setup
 	writeRegister(0x00, 0x01, 0x11);
