@@ -25,33 +25,44 @@
 
 #include "motor_commands.h"
 
-/* GLOBAL */
-bool g_brakes_enabled_status = true;
-uint8_t g_command_received = IDLE_STATE;
-Motor g_motor_1;
+/********** GLOBAL ***********/
+int32_t g_position_to_reach = NULL_ENCODER_POSITION;
+int32_t *g_position_to_reach_ptr = &g_position_to_reach;
+uint8_t g_new_position_required = NO_NEW_POSITION_REQUIRED;
+
+/* Define encoder only in the .cpp */
+Encoder encoder_motor_1(PIN_1_ENCODER, PIN_2_ENCODER);
+
+/* Create a motor structure for the 1st motor */
+Motor g_motor_1 = {
+	.motor_current_speed_reached = MOTOR_ZERO_SPEED,
+	.motor_previous_speed_reached = MOTOR_ZERO_SPEED,
+	.motor_turn_direction = TURN_CW,
+	.motor_error_state = NO_ERROR,
+	.motor_encoder = &encoder_motor_1,
+	.motor_brake_status = BRAKES_ENABLED,
+};
+
 Motor *g_motor_1_ptr = &g_motor_1;
 
 
-uint8_t check_serial_buffer()
+/**
+ * @brief Checks the serial buffer read entry for a new encoder position to reach
+ * 
+ * @return uint8_t A variable that indicates wether or not we want to reach a new position
+ */
+uint8_t check_serial_buffer(int32_t *position_to_reach)
 {
-	uint8_t res = IDLE_STATE;
-
+	uint8_t res = NO_NEW_POSITION_REQUIRED;
 	if (Serial.available() > 0)
 	{
-		int32_t command = Serial.read();
-
-		if (command == 'A')
-		{
-			res = TURN_CW;
-		}
-		else if (command == 'B')
-		{
-			res = TURN_CCW;
-		}
-		else
-		{
-			/* Do nothing */
-		}
+		*position_to_reach = Serial.parseInt();
+		Serial.println(*position_to_reach);
+		res = NEW_POSITION_REQUIRED;
+	}
+	else
+	{
+		/* Do nothing here */
 	}
 
 	/* Clear serial read buffer */
@@ -61,34 +72,6 @@ uint8_t check_serial_buffer()
 	}
 
 	return res;
-}
-
-void control_loop(uint8_t command)
-{
-	if (command == TURN_CW)
-	{
-		smooth_motor_slowdown(MOTOR_ZERO_SPEED, g_motor_1_ptr);
-
-		digitalWrite(DIRECTION_PIN, HIGH);
-		delay(1);
-
-		set_motor_speed(MOTOR_TEST_SPEED, g_motor_1_ptr);
-	}
-	else if (command == TURN_CCW)
-	{
-		smooth_motor_slowdown(MOTOR_ZERO_SPEED, g_motor_1_ptr);
-
-		digitalWrite(DIRECTION_PIN, LOW);
-		delay(1);
-
-		set_motor_speed(MOTOR_TEST_SPEED, g_motor_1_ptr);
-	}
-	else
-	{
-		/* Do nothing */
-	}
-
-	delay(1);
 }
 
 /* Arduino setup and loop */
@@ -102,16 +85,22 @@ void setup()
 	/* Enable device */
 	digitalWrite(ENABLE_PIN, HIGH);
 
-	/* Set motor speed for test */
-	g_motor_1.current_speed_reached = MOTOR_ZERO_SPEED;
-	set_motor_speed(MOTOR_TEST_SPEED, g_motor_1_ptr);
+	/* Reset encoder position at Teensy reset */
+	encoder_motor_1.write(0);
 
-	disable_brakes(&g_brakes_enabled_status);
+	disable_brakes(g_motor_1_ptr);
 }
 
 void loop()
 {
-	g_command_received = check_serial_buffer();
+	g_new_position_required = check_serial_buffer(g_position_to_reach_ptr);
 	
-	control_loop(g_command_received);
+	if (g_new_position_required == NEW_POSITION_REQUIRED)
+	{
+		move_motor_to_required_position(*g_position_to_reach_ptr, g_motor_1_ptr);
+	}
+	else
+	{
+		/* Nothing to do here */
+	}
 }
