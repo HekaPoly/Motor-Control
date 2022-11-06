@@ -9,8 +9,8 @@ import matplotlib.animation as animation
 # generate work
 def sender(connection):
     print('Sender: Running', flush=True)
-    value = np.arange(32, dtype=int)
-    values_to_send = np.arange(2, dtype=int)
+    value = np.arange(16, dtype=int) # Changed from 32
+    values_to_send = np.arange(4, dtype=int)
 
     # Check if serial port is open
         # Sets the parameters if not open
@@ -28,77 +28,104 @@ def sender(connection):
         except:
             pass
     
-    counter = 0
-    with open('test.txt', 'w') as f:
-        try:
-            while True:
-                start = timeit.default_timer()
-                bytes_to_read = arduino.in_waiting
+    #counter = 0
+    #with open('test.txt', 'w') as f:
+    try:
+        while True:
+            start = timeit.default_timer()
+            bytes_to_read = arduino.in_waiting
 
-                if bytes_to_read != 0:
-                    data = arduino.read(bytes_to_read)
-                    # Insert the bytes read in the queue
-                    for i in range(len(data)):
-                        value[i] = data[i]
-                    
-                    # Recompose values
-                    values_to_send[0] = value[0] + (value[1] << 8)
-                    values_to_send[1] = value[2] + (value[3] << 8)
-                    
-                    connection.send(values_to_send[0])
-                    connection.send(values_to_send[1])
+            if bytes_to_read != 0:
+                data = arduino.read(bytes_to_read)
+                # Insert the bytes read in the queue
+                for i in range(len(data)):
+                    value[i] = data[i]
+                
+                # Recompose values
+                counter = 0
+                for i in range(len(value), __step=4):
+                    values_to_send[counter] = value[i] + (value[i + 1] << 8) + (value[i + 2] << 16) + (value[i + 3] << 24)
+                    values_to_send[counter] = values_to_send[counter] - 5000
                     counter = counter + 1
 
-                    timer = timeit.default_timer() - start
-                    f.write(str(timer))
-                    f.write('\n')
-        except KeyboardInterrupt:
-            f.write('\n')
-            f.write(str(counter))
-            f.close()
+                connection.send(values_to_send[0])
+                connection.send(values_to_send[1])
+                connection.send(values_to_send[2])
+                connection.send(values_to_send[3])
+
+                """
+                timer = timeit.default_timer() - start
+                f.write(str(timer))
+                f.write('\n')
+                """
+    except KeyboardInterrupt:
+        #f.close()
+        print("Stopped by user")
 
 
-
-def animate(i, data_x, data_y, lines, connection):
+def animate(data, lines, connection):
     # Receive data
-    pos_x = connection.recv()
-    pos_y = connection.recv()
+    encoder_1 = connection.recv()
+    encoder_2 = connection.recv()
+    encoder_3 = connection.recv()
+    encoder_4 = connection.recv()
 
     # New version of array to assign to updated_data
-    updated_data_x = data_x
-    updated_data_y = data_y
+    updated_data_encoder_1 = data[0]
+    updated_data_encoder_2 = data[1]
+    updated_data_encoder_3 = data[2]
+    updated_data_encoder_4 = data[3]
 
-    updated_data_x[-1] = pos_x
-    updated_data_y[-1] = pos_y
+    updated_data_encoder_1[-1] = encoder_1
+    updated_data_encoder_2[-1] = encoder_2
+    updated_data_encoder_3[-1] = encoder_3
+    updated_data_encoder_4[-1] = encoder_4
 
-    lines[0].set_ydata(updated_data_x)
-    lines[1].set_ydata(updated_data_y)
+    lines[0].set_ydata(updated_data_encoder_1)
+    lines[1].set_ydata(updated_data_encoder_2)
+    lines[2].set_ydata(updated_data_encoder_3)
+    lines[3].set_ydata(updated_data_encoder_4)
 
     # Transfer new version of data to the data array
-    for j in range(len(updated_data_x) - 1):
-        data_x[j] = updated_data_x[j + 1]
-        data_y[j] = updated_data_y[j + 1]
+    for j in range(len(updated_data_encoder_1) - 1):
+        data[0][j] = updated_data_encoder_1[j + 1]
+        data[1][j] = updated_data_encoder_2[j + 1]
+        data[2][j] = updated_data_encoder_3[j + 1]
+        data[3][j] = updated_data_encoder_4[j + 1]
 
-    return lines[0], lines[1],
+    return lines[0], lines[1], lines[2], lines[3],
 
 def plot_data(connection):
     # Plot data
     fig, ax = plt.subplots()
-    ax.set_ylim(0.0, 4096.0)
+    ax.set_ylim(-4000.0, 4000.0)
 
     t = np.arange(0, 10, (1/10))
-    data_x = np.arange(0, 100, 1)
-    data_y = np.arange(0, 100, 1)
+    data_encoder_1 = np.arange(0, 100, 1)
+    data_encoder_2 = np.arange(0, 100, 1)
+    data_encoder_3 = np.arange(0, 100, 1)
+    data_encoder_4 = np.arange(0, 100, 1)
+
+    data = []
+    data.append(data_encoder_1)
+    data.append(data_encoder_2)
+    data.append(data_encoder_3)
+    data.append(data_encoder_4)
 
     # Create line object to contain both lines to plot
-    line_x, = ax.plot(t, data_x)
-    line_y, = ax.plot(t, data_y)
+    line_encoder_1, = ax.plot(t, data_encoder_1)
+    line_encoder_2, = ax.plot(t, data_encoder_2)
+    line_encoder_3, = ax.plot(t, data_encoder_3)
+    line_encoder_4, = ax.plot(t, data_encoder_4)
+
     lines = []
-    lines.append(line_x)
-    lines.append(line_y)
+    lines.append(line_encoder_1)
+    lines.append(line_encoder_2)
+    lines.append(line_encoder_3)
+    lines.append(line_encoder_4)
 
     ani = animation.FuncAnimation(
-        fig, animate,fargs=(data_x, data_y, lines, connection), interval=0.1, blit=True)
+        fig, animate,fargs=(data, lines, connection), interval=0.5, blit=True)
 
     plt.show()
 

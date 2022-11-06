@@ -16,19 +16,33 @@
 void setup() {
   Serial.begin(9600u);
 
+  for (int32_t i = 0; i < NUMBER_OF_ENCODERS; i++)
+  {
+    encoders[i]->write(5000u);
+  }
+
   analogReadResolution(12u);
 }
 
 void loop() {
-  pos_x = analogRead(VRX);
-  pos_y = analogRead(VRY);
+  for (int32_t i = 0; i < NUMBER_OF_ENCODERS; i++)
+  {
+    values_encoders[i] = abs(encoders[i]->read());
+  }
 
-  values_to_send[0] = pos_x;
-  values_to_send[1] = pos_x >> 8;
-  values_to_send[2] = pos_y;
-  values_to_send[3] = pos_y >> 8;
+  int32_t counter = 0;
+  for (int32_t i =0; i < NUMBER_OF_BYTES_TO_SEND; i++)
+  {
+    values_to_send[i]     = values_encoders[counter];
+    values_to_send[i + 1] = values_encoders[counter] << 8u;
+    values_to_send[i + 2] = values_encoders[counter] << 16u;
+    values_to_send[i + 3] = values_encoders[counter] << 24u;
 
-  Serial.write(values_to_send, 4);
+    i = i + 3;
+    counter = counter + 1;
+  }
+
+  Serial.write(values_to_send, NUMBER_OF_BYTES_TO_SEND);
   Serial.send_now();
 
   delay(30);
