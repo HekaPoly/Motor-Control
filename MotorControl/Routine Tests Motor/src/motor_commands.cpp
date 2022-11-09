@@ -21,7 +21,9 @@ Encoder encoder(PIN_2_ENCODER, PIN_1_ENCODER);
 
 
 /**
- * @brief motor_setup -> setup des différentes pin du Arduino qui vont chacune contrôler une partie différente du moteur. */
+ * @brief La fonction motor_setup permet de "setup" des différentes pin du Arduino qui 
+ * vont chacune contrôler une partie différente du moteur.
+ **/
 
 void motor_setup() {
 	pinMode(RESET_PIN, OUTPUT);
@@ -41,9 +43,11 @@ void motor_setup() {
 	digitalWrite(BRAKE_PIN, LOW);
 }
 /**
- * @brief La fonction return_angle converti la position angulaire du moteur lue par l'encodeur en degrés (1 décimale après la virgule (double)).
+ * @brief La fonction return_angle converti la position angulaire du moteur lue par 
+ * l'encodeur en degrés (1 décimale après la virgule).
  * 
- * @param fullTurn : booléen, "True" si le moteur à fait un tour complet, "False" si non. (confus)
+ * @param fullTurn : booléen, "True" si le moteur à fait un tour complet, 
+ * "False" si non. (confus)
  * 
  * @return Retourne la position angulaire du moteur en degré.
  */
@@ -54,7 +58,7 @@ double read_angle(bool fullTurn) {
 	return angle;
 }
 /**
- * @brief La fonction va nous permettre de changer de sens la rotaion du moteur.
+ * @brief La fonction va nous permettre de changer le sens la rotaion du moteur.
  * @param direction : Sens de rotation du moteur
  */
 
