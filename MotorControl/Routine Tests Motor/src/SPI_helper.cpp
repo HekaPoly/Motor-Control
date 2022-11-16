@@ -44,13 +44,13 @@ void readRegisters()
 /**
  * @brief Cette fonction sert à setup le SPI et à le démarrer.
  */
-void SPISetup() 
+void spi_setup() 
 {
-	//SPI Setup
+	/* SPI Setup */
 	pinMode(CS, OUTPUT);
 	SPI.begin();
 	writeRegisters();
-	//writeDefaultRegisters();
+	/* writeDefaultRegisters(); */
 }
 
 /**
@@ -104,12 +104,12 @@ void writeRegister(byte reg, byte value1, byte value2)
 	digitalWrite(CS, HIGH);
 	delayMicroseconds(1);
 
-	//send write command + reg adress
+	/* send write command + reg adress */
 	SPI.transfer(toSend);
 
-	//send first 8 bits (MSB)
+	/* send first 8 bits (MSB) */
 	SPI.transfer(value1);
-	//send last 8 bits (LSB)
+	/* send last 8 bits (LSB) */
 	SPI.transfer(value2);
 
 	digitalWrite(CS, LOW);
