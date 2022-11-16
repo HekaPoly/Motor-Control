@@ -12,7 +12,7 @@ const byte registersAdress[] = {0x00,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0
 void writeRegister(byte reg, byte value1, byte value2);
 void writeRegisters();
 unsigned int readRegister(byte reg);
-void SPISetup();
+void spi_setup();
 void readRegisters();
 void writeDefaultRegisters();
 void motorSetup();

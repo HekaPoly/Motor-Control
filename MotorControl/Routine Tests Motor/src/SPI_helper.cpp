@@ -41,7 +41,11 @@ void readRegisters()
 	Serial.println();
 }
 
-void SPISetup() {
+/**
+ * @brief Cette fonction sert à setup le SPI et à le démarrer.
+ */
+void SPISetup() 
+{
 	//SPI Setup
 	pinMode(CS, OUTPUT);
 	SPI.begin();
@@ -84,7 +88,15 @@ unsigned int readRegister(byte reg)
 	return (result);
 }
 
-void writeRegister(byte reg, byte value1, byte value2) {
+/**
+ * @brief 
+ * 
+ * @param reg 
+ * @param value1 
+ * @param value2 
+ */
+void writeRegister(byte reg, byte value1, byte value2) 
+{
 
 	byte toSend = WRITE | reg;
 

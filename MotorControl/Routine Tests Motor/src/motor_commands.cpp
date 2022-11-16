@@ -6,7 +6,8 @@
  * Équipe Contrôle des moteurs - Heka
  * 
  * @brief
- * This file is meant to define functions to control a motor via the DRV8308 motor driver
+ * This file is meant to define functions to control a motor 
+ * via the DRV8308 motor driver
  * 
  * @copyright Copyright Heka (c) 2022
  * 
@@ -21,11 +22,12 @@ Encoder encoder(PIN_2_ENCODER, PIN_1_ENCODER);
 
 
 /**
- * @brief La fonction motor_setup permet de "setup" des différentes pin du Arduino qui 
- * vont chacune contrôler une partie différente du moteur.
+ * @brief La fonction motor_setup permet de "setup" des différentes pin du 
+ * Arduino qui vont chacune contrôler une partie différente du moteur.
  **/
 
-void motor_setup() {
+void motor_setup() 
+{
 	pinMode(RESET_PIN, OUTPUT);
 	pinMode(ENABLE_PIN, OUTPUT);
 	pinMode(DIRECTION_PIN, OUTPUT);
@@ -43,8 +45,8 @@ void motor_setup() {
 	digitalWrite(BRAKE_PIN, LOW);
 }
 /**
- * @brief La fonction return_angle converti la position angulaire du moteur lue par 
- * l'encodeur en degrés (1 décimale après la virgule).
+ * @brief La fonction return_angle converti la position angulaire du moteur lue
+ * par l'encodeur en degrés (1 décimale après la virgule).
  * 
  * @param fullTurn : booléen, "True" si le moteur à fait un tour complet, 
  * "False" si non. (confus)
@@ -52,17 +54,20 @@ void motor_setup() {
  * @return Retourne la position angulaire du moteur en degré.
  */
 
-double read_angle(bool fullTurn) {
+double read_angle(bool fullTurn) 
+{
 	double angle = encoder.read() * COUNT_TO_ANGLE_FACTOR;
 
 	return angle;
 }
 /**
- * @brief La fonction va nous permettre de changer le sens la rotaion du moteur.
+ * @brief La fonction va nous permettre de changer le sens la rotaion du 
+ * moteur.
  * @param direction : Sens de rotation du moteur
  */
 
-void set_direction(bool direction){
+void set_direction(bool direction)
+{
 	if (direction)
 	{
 		digitalWrite(DIRECTION_PIN, HIGH);
