@@ -10,20 +10,20 @@
  */
 void write_registers() 
 {
-	write_register(0x00, 0x01, 0x11);
-	write_register(0x01, 0x00, 0x00);
-	write_register(0x02, 0x04, 0xFF);
-	write_register(0x03, 0x68, 0x00);
-	write_register(0x04, 0x00, 0xD7);
-	write_register(0x05, 0x00, 0x00);
-	write_register(0x06, 0x00, 0x00);
-	write_register(0x07, 0x00, 0x00);
-	write_register(0x08, 0x00, 0x00);
-	write_register(0x09, 0x00, 0x00);
-	write_register(0x0A, 0xF0, 0x00);
-	write_register(0x0B, 0x00, 0x00);
-	write_register(0x2A, 0x00, 0x00);
-}
+	write_register(REG_INIT_SETTINGS, 0x01, 0x11);
+	write_register(REG_COMMUTATION_TIMING, 0x00, 0x00);
+	write_register(REG_LOCK_HALL_MIN_PERIOD, 0x04, 0xFF);
+	write_register(REG_LOCK_SPEED_CHANGE_TOLERANCE, 0x68, 0x00);
+	write_register(REG_DRIVER_COMPENSATION, 0x00, 0xD7);
+	write_register(REG_SPEED_COMPENSATOR_GAIN, 0x00, 0x00);
+	write_register(REG_FILTER_COEFF_POLE_FREQ, 0x00, 0x00);
+	write_register(REG_FILTER_COEFF_ZERO_FREQ, 0x00, 0x00);
+	write_register(REG_COMPENSATOR_COEFF_POLE_FREQ, 0x00, 0x00);
+	write_register(REG_COMPENSATOR_COEFF_ZERO_FREQ, 0x00, 0x00);
+	write_register(REG_PROTECTION_AND_SPEED_CONTROL_GAIN, 0xF0, 0x00);
+	write_register(REG_OPEN_LOOP_GAIN, 0x00, 0x00);
+	write_register(REG_FAULT_COLLECTION_UNIT, 0x00, 0x00);
+
 
 /**
  * @brief To read the registers
@@ -32,13 +32,11 @@ void write_registers()
 void read_registers() {
 	//To Read the registers
 	Serial.println("Lecture des registres");
-	Serial.println(read_register(0x00), HEX);
-	Serial.println(read_register(0x02), HEX);
-	Serial.println(read_register(0x03), HEX);
-	Serial.println(read_register(0x04), HEX);
-	Serial.println(read_register(0x0A), HEX);
-	Serial.println();
-	Serial.println();
+	Serial.println(read_register(REG_INIT_SETTINGS), HEX);
+	Serial.println(read_register(REG_LOCK_HALL_MIN_PERIOD), HEX);
+	Serial.println(read_register(REG_LOCK_SPEED_CHANGE_TOLERANCE), HEX);
+	Serial.println(read_register(REG_DRIVER_COMPENSATION), HEX);
+	Serial.println(read_register(REG_PROTECTION_AND_SPEED_CONTROL_GAIN), HEX);
 }
 
 /**
