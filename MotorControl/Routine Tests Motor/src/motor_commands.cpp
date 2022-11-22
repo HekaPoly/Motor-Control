@@ -49,7 +49,7 @@ void motor_setup()
  * par l'encodeur en degrés (1 décimale après la virgule).
  * 
  * @param fullTurn : booléen, "True" si le moteur à fait un tour complet, 
- * "False" si non. (confus)
+ * "False" si non.
  * 
  * @return Retourne la position angulaire du moteur en degré.
  */
