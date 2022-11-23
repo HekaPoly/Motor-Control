@@ -29,6 +29,9 @@ int speed = 100;
 bool brakes_enabled_status = true;
 uint8_t command_received = TURN_CW;
 
+/**
+ * @brief setup for motor control
+ */
 void setup() 
 {
 	Serial.begin(9600);
@@ -48,6 +51,11 @@ void setup()
 	analogWrite(MOTOR_PIN, speed);
 }
 
+/**
+ * @brief turns off brake pin if brakes are activated
+ * 
+ * @param current_brakes_status bool - state of brakes: on (True) or off (False)
+ */
 void disable_brakes(bool *current_brakes_status)
 {
 	if (*current_brakes_status == true)
@@ -57,6 +65,15 @@ void disable_brakes(bool *current_brakes_status)
 	}
 }
 
+/**
+ * @brief Activates direction pin if command is to turn clockwise, 
+ * disactivates it if command is to turn counter-clockwise and 
+ * activates brake pin if command is to brake
+ * 
+ * Decides what to do with motor depending on serial command
+ * 
+ * @param command dictates what to do according to the direction and the brake
+ */
 inline void control_loop(uint8_t command)
 {	
 	if (command == TURN_CW)
@@ -82,6 +99,12 @@ inline void control_loop(uint8_t command)
 	delay(1);
 }
 
+/**
+ * @brief gives a command value to result (res) according to a received 
+ * command from serial buffer
+ * 
+ * @return uint8_t motor direction command 
+ */
 uint8_t check_serial_buffer()
 {
 	uint8_t res = IDLE_STATE;
@@ -117,6 +140,10 @@ uint8_t check_serial_buffer()
 	return res;
 }
 
+/**
+ * @brief main loop
+ * 
+ */
 void loop() 
 {
 	command_received = check_serial_buffer();
@@ -124,23 +151,34 @@ void loop()
 	control_loop(command_received);
 }
 
-
-
-void readFault() {
-	if (digitalRead(FAULT_PIN) == HIGH) {
+/**
+ * @brief prints error presence-absence and location
+ * 
+ */
+void readFault() 
+{
+	if (digitalRead(FAULT_PIN) == HIGH) 
+	{
 		Serial.println("Il y a une faute :(");
 	}
 	else
+	{
 		Serial.print("Pas de faute");
+	}
 
 	Serial.print("Le registre de faute est : ");
 	Serial.println(readRegister(0x2A), BIN);
 }
 
-void writeDefaultRegisters() {
-	//Recommended setup
+/**
+ * @brief set default values in driver registers
+ * 
+ */
+void writeDefaultRegisters() 
+{
+	/* Recommended setup */
 	writeRegister(0x00, 0x01, 0x11);
-	writeRegister(0x01,0x00,0x00);
+	writeRegister(0x01, 0x00, 0x00);
 	writeRegister(0x02, 0x04, 0xFF);
 	writeRegister(0x03, 0x68, 0x00);
 	writeRegister(0x04, 0x00, 0xD7);
