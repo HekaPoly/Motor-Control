@@ -64,11 +64,15 @@ void disable_brakes(bool *current_brakes_status)
 		*current_brakes_status = false;
 	}
 }
+
 /**
- * @brief activates direction pin if command is to turn clockwise, disactivates it 
- * if command is to turn counter-clockwise and activates brake pin if command is to brake
+ * @brief Activates direction pin if command is to turn clockwise, 
+ * disactivates it if command is to turn counter-clockwise and 
+ * activates brake pin if command is to brake
+ * 
  * Decides what to do with motor depending on serial command
- * @param command dictates what to do in relation to the direction and the brake
+ * 
+ * @param command dictates what to do according to the direction and the brake
  */
 inline void control_loop(uint8_t command)
 {	
@@ -94,8 +98,10 @@ inline void control_loop(uint8_t command)
 
 	delay(1);
 }
+
 /**
- * @brief gives a command value to res according to a received command from serial buffer
+ * @brief gives a command value to result (res) according to a received 
+ * command from serial buffer
  * 
  * @return uint8_t motor direction command 
  */
@@ -133,6 +139,7 @@ uint8_t check_serial_buffer()
 
 	return res;
 }
+
 /**
  * @brief main loop
  * 
@@ -144,26 +151,34 @@ void loop()
 	control_loop(command_received);
 }
 
-
-
-void readFault() {
-	if (digitalRead(FAULT_PIN) == HIGH) {
+/**
+ * @brief prints error presence-absence and location
+ * 
+ */
+void readFault() 
+{
+	if (digitalRead(FAULT_PIN) == HIGH) 
+	{
 		Serial.println("Il y a une faute :(");
 	}
 	else
+	{
 		Serial.print("Pas de faute");
+	}
 
 	Serial.print("Le registre de faute est : ");
 	Serial.println(readRegister(0x2A), BIN);
 }
+
 /**
  * @brief set default values in driver registers
  * 
  */
-void writeDefaultRegisters() {
-	//Recommended setup
+void writeDefaultRegisters() 
+{
+	/* Recommended setup */
 	writeRegister(0x00, 0x01, 0x11);
-	writeRegister(0x01,0x00,0x00);
+	writeRegister(0x01, 0x00, 0x00);
 	writeRegister(0x02, 0x04, 0xFF);
 	writeRegister(0x03, 0x68, 0x00);
 	writeRegister(0x04, 0x00, 0xD7);

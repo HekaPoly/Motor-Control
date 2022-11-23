@@ -4,7 +4,12 @@
 #include <Encoder.h>
 #include "SPI_helper.h"
 
-void writeRegisters() {
+/**
+ * @brief set default values in driver registers
+ * 
+ */
+void writeRegisters() 
+{
 	writeRegister(0x00, 0x01, 0x11);
 	writeRegister(0x01, 0x00, 0x00);
 	writeRegister(0x02, 0x04, 0xFF);
@@ -20,8 +25,12 @@ void writeRegisters() {
 	writeRegister(0x2A, 0x00, 0x00);
 }
 
-void readRegisters() {
-	//To Read the registers
+/**
+ * @brief To read the registers
+ * 
+ */
+void readRegisters() 
+{
 	Serial.println("Lecture des registres");
 	Serial.println(readRegister(0x00), HEX);
 	Serial.println(readRegister(0x02), HEX);
@@ -40,26 +49,34 @@ void SPISetup() {
 	//writeDefaultRegisters();
 }
 
-unsigned int readRegister(byte reg) {
-	byte toRead = READ | reg;
+/**
+ * @brief read value in a register
+ * 
+ * @param reg register
+ * @return unsigned int 
+ */
+unsigned int readRegister(byte reg) 
+{
+	byte toRead = (READ | reg);
 
 	SPI.beginTransaction(SPISettings(maxSpeed, MSBFIRST, SPI_MODE0));
 	digitalWrite(CS, HIGH);
 	delayMicroseconds(1);
-	//send read command + reg adress
+	/* send read command + reg adress */
 	SPI.transfer(toRead);
 
 	int result;
 	byte readValue;
 
-	//get first 8 bits of data (MSB)
+	/* get first 8 bits of data (Most Significant Byte) */
 	readValue = SPI.transfer(0x00);
-	result = readValue << 8;
-	//get last 8 bits of data (LSB)
+	result = (readValue << 8);
+
+	/* get last 8 bits of data (Less Significant Byte) */
 	readValue = SPI.transfer(0x00);
 
-	//combine into 16 bits result
-	result = result | readValue;
+	/* combine into 16 bits result */
+	result = (result | readValue);
 
 	digitalWrite(CS, LOW);
 	SPI.endTransaction();
