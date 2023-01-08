@@ -1,13 +1,15 @@
+/**
+ * @file
+ * spi_helper.h
+ * 
+ * @copyright Heka (c) 2022
+ */
+#ifndef SPI_HELPER_H_
+#define SPI_HELPER_H_
+
 #include <Arduino.h>
 
-//SPI communication
-const byte READ = 0b10000000;
-const byte WRITE = 0b00000000;
-const byte faultReg = 0x2a;
-const int maxSpeed = 480000; //Speed of the SPI (HZ)
-const int CS = 10;
-
-/* Définir les adresses des registres du DRV8308 */
+/* DEFINES */
 #define REG_INIT_SETTINGS                           0x00
 #define REG_COMMUTATION_TIMING                      0x01
 #define REG_LOCK_HALL_MIN_PERIOD                    0x02
@@ -19,15 +21,17 @@ const int CS = 10;
 #define REG_COMPENSATOR_COEFF_POLE_FREQ             0x08
 #define REG_COMPENSATOR_COEFF_ZERO_FREQ             0x09
 #define REG_PROTECTION_AND_SPEED_CONTROL_GAIN       0x0A
-#define REG_OPEN_LOOP_GAIN                          0x0B
+#define REG_SPEED                                   0x0B
 #define REG_FAULT_COLLECTION_UNIT                   0x2A
 
+/* CONSTANTS */
+const byte SPI_READ = 0b10000000;
+const byte SPI_WRITE = 0b00000000;
+const uint32_t SPI_MAX_SPEED = 480000;
+const uint8_t CS = 10;
 
-//Fonctions SPI
-void write_register(byte reg, byte value1, byte value2);
-void write_registers();
-unsigned int read_register(byte reg);
-void spi_setup();
-void read_registers();
-void write_default_registers();
-void motor_setup();
+/* FUNCTION PROTOTYPES */
+void spi_write_register(byte reg, byte value1, byte value2);
+void spi_setup(void);
+
+#endif /* SPI_HELPER_H_ */
