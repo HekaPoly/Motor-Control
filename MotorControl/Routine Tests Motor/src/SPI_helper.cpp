@@ -78,3 +78,20 @@ void spi_write_register(byte reg, byte value1, byte value2)
 	digitalWrite(CS, LOW);
 	SPI.endTransaction();
 }
+
+void spi_read_register(byte reg, byte value1, byte value2)
+{
+	byte reg_address = SPI_READ | reg;
+
+	SPI.beginTransaction(SPISettings(SPI_MAX_SPEED, MSBFIRST, SPI_MODE0));
+	digitalWrite(CS, HIGH);
+	delayMicroseconds(1);
+
+	/* Send (in order): register address, MSB and LSB */
+	SPI.transfer(reg_address);
+	SPI.transfer(value1);
+	SPI.transfer(value2);
+
+	digitalWrite(CS, LOW);
+	SPI.endTransaction();
+}

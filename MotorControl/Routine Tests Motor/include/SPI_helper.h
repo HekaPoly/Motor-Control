@@ -32,6 +32,7 @@ const uint8_t CS = 10;
 
 /* FUNCTION PROTOTYPES */
 void spi_write_register(byte reg, byte value1, byte value2);
+void spi_read_register(byte reg, byte value1, byte value2);
 void spi_setup(void);
 
 #endif /* SPI_HELPER_H_ */
