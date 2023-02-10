@@ -78,3 +78,25 @@ void spi_write_register(byte reg, byte value1, byte value2)
 	digitalWrite(CS, LOW);
 	SPI.endTransaction();
 }
+
+uint32_t spi_read_register(byte reg, byte value1, byte value2)
+{
+	byte reg_address = SPI_READ | reg;
+
+	SPI.beginTransaction(SPISettings(SPI_MAX_SPEED, MSBFIRST, SPI_MODE0));
+	digitalWrite(CS, HIGH);
+	delayMicroseconds(1);
+	SPI.transfer(reg_address);
+
+ 	//get first 8 bits of data (MSB)
+ 	byte readValue = SPI.transfer(0x00);
+ 	uint32_t result = readValue << 8;
+ 	//get last 8 bits of data (LSB)
+ 	readValue = SPI.transfer(0x00);
+ 	result = result | readValue;
+
+ 	digitalWrite(CS, LOW);
+ 	SPI.endTransaction();
+
+ 	return result;
+}

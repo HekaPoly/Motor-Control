@@ -14,7 +14,7 @@
 /**
  * @brief Setup function for main loop - Code executes at Teensy startup
  */
-void setup(void) 
+void setup(void)
 {
   /* Start as master on I2C bus */
   Wire.begin();
