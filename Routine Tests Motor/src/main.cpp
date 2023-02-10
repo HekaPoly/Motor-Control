@@ -90,6 +90,7 @@ void loop(void)
 	
 	if (g_new_position_required == NEW_POSITION_REQUIRED)
 	{
-		motor_move_to_required_position(*g_position_to_reach_ptr, g_motor_1_ptr);
+		//motor_move_to_required_position(*g_position_to_reach_ptr, g_motor_1_ptr);
+		motor_control_speed(*g_position_to_reach_ptr, g_motor_1_ptr);
 	}
 }

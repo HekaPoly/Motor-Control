@@ -73,6 +73,11 @@ void motor_enable_brakes(Motor * current_motor)
 	}
 }
 
+void motor_control_speed(int32_t desired_speed, Motor * current_motor)
+{
+	spi_write_register(REG_SPEED, 0x00, desired_speed);
+}
+
 /**
  * @brief Returns a motor to its zero position according to the encoder value
  * 
@@ -133,6 +138,8 @@ static void smooth_motor_slowdown(uint8_t desired_speed, Motor * current_motor)
 	{
 		Serial.println("Start slowdown...");
 
+		spi_write_register(REG_SPEED, 0x00, MOTOR_ZERO_SPEED);
+		/*
 		uint8_t amount_decreased = 0;
 		uint8_t amount_to_decrease = MOTOR_TEST_SPEED - desired_speed;
 		for (uint8_t i = 0; i < amount_to_decrease; i++)
@@ -142,10 +149,11 @@ static void smooth_motor_slowdown(uint8_t desired_speed, Motor * current_motor)
 			amount_decreased++;
 			delay(1);
 		}
+		*/
 
 		current_motor->motor_previous_speed_reached = current_motor->motor_current_speed_reached;
-		current_motor->motor_current_speed_reached = MOTOR_TEST_SPEED - amount_decreased;
-		Serial.println(MOTOR_TEST_SPEED - amount_decreased);
+		current_motor->motor_current_speed_reached = MOTOR_ZERO_SPEED;
+		//Serial.println(MOTOR_TEST_SPEED - amount_decreased);
 	}
 	else
 	{

@@ -29,7 +29,7 @@
 
 /* Other constants */
 #define IMPULSE_PER_TURN_RATIO  2
-#define MOTOR_TEST_SPEED        130
+#define MOTOR_TEST_SPEED        200
 #define MOTOR_ZERO_SPEED        100
 #define NULL_ENCODER_POSITION   0
 
@@ -79,5 +79,6 @@ void motor_setup();
 void motor_disable_brakes(Motor * current_motor);
 void motor_enable_brakes(Motor * current_motor);
 void motor_move_to_required_position(int32_t desired_position, Motor * current_motor);
+void motor_control_speed(int32_t desired_position, Motor * current_motor);
 
 #endif /* MOTOR_H_ */
