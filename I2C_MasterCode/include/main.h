@@ -16,7 +16,7 @@
 #include <Wire.h>
 
 /* CONSTANTS */
-#define ADDRESS_MOTOR_1 0x01
+#define ADDRESS_MOTOR_1 0x1
 #define VITESSE 0x01
 
 #endif /* _MAIN_H_ */
