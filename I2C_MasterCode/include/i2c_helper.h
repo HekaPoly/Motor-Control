@@ -1,21 +1,17 @@
 /**
  * @file
- * main.h
+ * i2c_helper.h
  * 
  * @brief
- * Header file for main file of the master TeensyLC code
+ * Header file for I2C functions
  * 
  * @copyright Copyright (c) 2023
  * 
  */
-
-#ifndef _MAIN_H_
-#define _MAIN_H_
-
 #include <Arduino.h>
 #include <Wire.h>
 
-/* CONSTANTS */
+/* COMMANDS */
 #define ADDRESS_MOTOR_1 0x1
 #define COMMAND_SPEED 0x02
 #define COMMAND_POSITION 0x01
@@ -23,4 +19,6 @@
 #define SLAVE_COMMAND_VALUE_ENCODER 0x01
 #define SLAVE_COMMAND_STATE 0x02
 
-#endif /* _MAIN_H_ */
+/* FUNCTION PROTOTYPES */
+uint32_t create_message(uint8_t address, uint8_t command, uint16_t data);
+
