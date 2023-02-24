@@ -18,5 +18,7 @@
 /* CONSTANTS */
 #define ADDRESS_MOTOR_1 0x01
 #define VITESSE 0x01
+#define SUCCESS 0x00
+#define FAILURE 0x01
 
 #endif /* _MAIN_H_ */
