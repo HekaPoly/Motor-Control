@@ -17,8 +17,10 @@
 
 /* CONSTANTS */
 #define ADDRESS_MOTOR_1 0x01
-#define VITESSE 0x01
-#define SUCCESS 0x00
-#define FAILURE 0x01
+
+#define COMMAND_POSITION 0x01
+#define COMMAND_VELOCITY 0x02
+#define COMMAND_BREAK 0x03
+#define COMMAND_EN 0x04
 
 #endif /* _MAIN_H_ */
